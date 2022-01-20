@@ -1,8 +1,6 @@
-import matplotlib_inline
 import numpy as np
 import pandas as pd
 from scipy.optimize import brute
-#%matplotlib_inline
 from pylab import mpl
 import matplotlib.pyplot as plt
 
@@ -44,7 +42,7 @@ class SMAVectorBacktester(object):
     def get_data(self):
         '''Retrieves and prepares the data
         '''
-        raw = pd.read_csv('/Users/haquochung/OneDrive/OneDrive - RMIT University/Home/PyCharm/Vietnam quant/Data collection/VN30 historial price', index_col=0, parse_dates=True).dropna()
+        raw = pd.read_csv('/Users/haquochung/OneDrive/OneDrive - RMIT University/Home/PyCharm/Vietnam quant/Data_collection/VN30 historical price', index_col=0, parse_dates=True).dropna()
         raw = pd.DataFrame(raw[self.symbol])
         raw = raw.loc[self.start: self.end]
         raw.rename(columns = {self.symbol:'price'}, inplace = True)
@@ -118,7 +116,7 @@ class SMAVectorBacktester(object):
         return opt, -self.update_and_run(opt)
 
 if __name__ =='__main__':
-    smabt = SMAVectorBacktester('POW', 52, 252, '2019-01-01','2022-01-14')
+    smabt = SMAVectorBacktester('VHM', 52, 252, '2019-01-01','2022-01-14')
     print(smabt.run_strategy())
     smabt.plot_results()
 

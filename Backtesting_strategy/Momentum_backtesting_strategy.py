@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 
 class MomVectorBacktester(object):
@@ -17,7 +17,7 @@ class MomVectorBacktester(object):
 
     def get_data(self):
 
-        raw = pd.read_csv('http://hilpisch.com/pyalgo_eikon_eod_data.csv', index_col=0,parse_dates=True).dropna()
+        raw = pd.read_csv('/Users/haquochung/OneDrive/OneDrive - RMIT University/Home/PyCharm/Vietnam quant/Data_collection/VN30 historical price', index_col=0, parse_dates=True).dropna()
         raw = pd.DataFrame(raw[self.symbol])
         raw = raw.loc[self.start : self.end]
         raw.rename(columns = {self.symbol: 'price'},inplace =True)
@@ -51,12 +51,13 @@ class MomVectorBacktester(object):
             print('No resluts to plot yet. Run a strategy')
         title = '%s | TC = %.4f' % (self.symbol,self.tc)
         self.results[['creturns','cstrategy']].plot(title = title, figsize =(10,6))
+        plt.show()
 
 if __name__ == '__main__':
-    mombt = MomVectorBacktester('XAU=', '2010-1-1', '2020-12-31',10000,0.0)
+    mombt = MomVectorBacktester('VHM', '2020-1-1', '2021-12-31',10000,0.0)
     print(mombt.run_strategy())
     print(mombt.run_strategy(momentum=2))
-
-    mombt = MomVectorBacktester('XAU=', '2010-1-1', '2020-12-31',10000,0.0001)
+    mombt.plot_results()
+    mombt = MomVectorBacktester('PDR', '2020-1-1', '2021-12-31',10000,0.0001)
     print(mombt.run_strategy(momentum=2))
     mombt.plot_results()
