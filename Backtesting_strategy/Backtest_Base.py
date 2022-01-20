@@ -53,7 +53,7 @@ class BacktestBase(object):
     def get_data(self):
 
         #raw = pd.read_csv('http://hilpisch.com/pyalgo_eikon_eod_data.csv', index_col=0,parse_dates=True).dropna()
-        raw = pd.read_csv('/Users/haquochung/OneDrive/OneDrive - RMIT University/Home/PyCharm/Vietnam quant/Data_collection/VN30 historical price', index_col=0,parse_dates=True).dropna()
+        raw = pd.read_csv('/Users/haquochung/OneDrive/OneDrive - RMIT University/Home/PyCharm/Vietnam quant/Data_collection/VN30 historical since 2010', index_col=0,parse_dates=True).dropna()
         raw = pd.DataFrame(raw[self.symbol])
         raw = raw.loc[self.start : self.end]
         raw.rename(columns = {self.symbol: 'price'},inplace =True)
@@ -83,7 +83,7 @@ class BacktestBase(object):
 
     def print_net_wealth(self, bar):
         date, price = self.get_date_price(bar)
-        net_wealth = self.unit * price +self.amount
+        net_wealth = self.units * price +self.amount
         print(f'{net_wealth} | current net wealth {net_wealth:.2f}')
 
     def place_buy_order(self, bar,units= None, amount = None):
@@ -134,7 +134,7 @@ class BacktestBase(object):
         
 if __name__ == '__main__':
     #bb = BacktestBase('AAPL.O', ' 2018-01-01','2020-01-01', 1000000)
-    bb = BacktestBase('VHM', ' 2018-01-01','2022-1-16', 1000000)
+    bb = BacktestBase('VPB', ' 2018-01-01','2022-1-16', 1000000)
     print(bb.data.info())
     print(bb.data.tail())
     bb.plot_data()
