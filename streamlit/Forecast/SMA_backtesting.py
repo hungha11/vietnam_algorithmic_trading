@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import brute
-from pylab import mpl
+import streamlit as st
 import matplotlib.pyplot as plt
+import vnquant.DataLoader as dl
+from datetime import datetime
+import plotly.figure_factory as ff
+
 
 
 
@@ -39,12 +43,23 @@ class SMAVectorBacktester(object):
         self.results = None
         self.get_data()
 
+
+
     def get_data(self):
         '''Retrieves and prepares the data
         '''
-        raw = pd.read_csv('/Users/haquochung/OneDrive/OneDrive - RMIT University/Home/PyCharm/Vietnam quant/Data_collection/VN30 historical price', index_col=0, parse_dates=True).dropna()
-        raw = pd.DataFrame(raw[self.symbol])
-        raw = raw.loc[self.start: self.end]
+        #raw = pd.read_csv('/Users/haquochung/OneDrive/OneDrive - RMIT University/Home/PyCharm/Vietnam quant/Data_collection/VN30 historical price', index_col=0, parse_dates=True).dropna()
+        start = '2010-01-01'
+        now = datetime.now()
+        end = now.strftime("%Y-%m-%d")
+        loader = dl.DataLoader(self.symbol, start, end, data_source='VND', minimal=True)
+        pricedata = loader.download()
+        close_data = pricedata['close'].dropna()
+
+
+
+        #raw = close_data[self.symbol]
+        raw = close_data.loc[self.start: self.end]
         raw.rename(columns = {self.symbol:'price'}, inplace = True)
         raw['return'] = np.log(raw/raw.shift(1))
         raw['SMA1'] = raw['price'].rolling(self.SMA1).mean()
@@ -93,7 +108,20 @@ class SMAVectorBacktester(object):
         title = '%s | SMA1 = %d, SMA2=%d' % (self.symbol, self.SMA1, self.SMA2)
         self.results[['creturns', 'cstrategy']].plot(title = title, figsize = (10,6))
         plt.show()
-
+    def st_plot_results(self):
+        '''
+        Plot the cumulative performance of the strategy compared to the symbol
+        '''
+        if self.results is None:
+            print('No result to plot yet. Please run the strategy.')
+        # plt.style.use('seaborn')
+        # mpl.rcParams['savefig.dpi'] = 300
+        # mpl.rcParams['font.family']= 'serif'
+        title = '%s | SMA1 = %d, SMA2=%d' % (self.symbol, self.SMA1, self.SMA2)
+        self.results[['creturns', 'cstrategy']].plot(title=title, figsize=(10, 6))
+        fig,ax= plt.subplot()
+        ax.line()
+        st.pyplot(fig)
 
     def update_and_run(self, SMA):
         '''
@@ -116,12 +144,17 @@ class SMAVectorBacktester(object):
         return opt, -self.update_and_run(opt)
 
 if __name__ =='__main__':
-    smabt = SMAVectorBacktester('VHM', 52, 252, '2019-01-01','2022-01-14')
+    # smabt = SMAVectorBacktester('HAH', 52, 252, '2019-01-01','2022-01-14')
+    # print(smabt.run_strategy())
+    # smabt.plot_results()
+    ticker = input('Enter a string')
+    slow = int(input('enter a number'))
+    fast = int(input('enter a number'))
+    smabt = SMAVectorBacktester(ticker, slow, fast, '2019-01-01','2022-01-14')
     print(smabt.run_strategy())
     smabt.plot_results()
-
-    print(smabt.optimization_parameters((30,56,4),(200,300,4)))
-    smabt.plot_results()
+    #print(smabt.optimization_parameters((30,56,4),(200,300,4)))
+    #smabt.plot_results()
 
 
 
